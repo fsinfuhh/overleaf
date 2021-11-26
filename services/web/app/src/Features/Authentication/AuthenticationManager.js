@@ -8,6 +8,7 @@ const {
   InvalidPasswordError,
 } = require('./AuthenticationErrors')
 const util = require('util')
+const crypto = require('crypto')
 
 const BCRYPT_ROUNDS = Settings.security.bcryptRounds || 12
 const BCRYPT_MINOR_VERSION = Settings.security.bcryptMinorVersion || 'a'
@@ -30,29 +31,31 @@ const AuthenticationManager = {
       if (error) {
         return callback(error)
       }
-      if (!user || !user.hashedPassword) {
-        return callback(null, null)
-      }
-      bcrypt.compare(password, user.hashedPassword, function (error, match) {
-        if (error) {
-          return callback(error)
-        }
-        if (!match) {
-          return callback(null, null)
-        }
-        AuthenticationManager.checkRounds(
-          user,
-          user.hashedPassword,
-          password,
-          function (err) {
-            if (err) {
-              return callback(err)
-            }
-            callback(null, user)
-          }
-        )
-      })
+      AuthenticationManager.createIfNotExistsAndLogin(query, user, callback)
     })
+  },
+
+  createIfNotExistsAndLogin(query, user, callback) {
+    if (!user) {
+      // create random password for local user database, does not get checked during login
+      const pass = crypto.randomBytes(32).toString("hex")
+      require('../User/UserRegistrationHandler').registerNewUser(
+        {
+          email: query.email,
+          password: pass
+        },
+        function(error, user) {
+          if (error) {
+            callback(error)
+          }
+          user.emails[0].confirmedAt = Date.now()
+          user.save()
+          callback(null, user)
+        }
+      )
+    } else {
+      callback(null, user)
+    }
   },
 
   validateEmail(email) {

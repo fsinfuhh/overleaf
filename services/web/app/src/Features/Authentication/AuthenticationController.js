@@ -75,7 +75,7 @@ const AuthenticationController = {
     // This function is middleware which wraps the passport.authenticate middleware,
     // so we can send back our custom `{message: {text: "", type: ""}}` responses on failure,
     // and send a `{redir: ""}` response on success
-    passport.authenticate('local', function (err, user, info) {
+    passport.authenticate('ldapauth', function (err, user, info) {
       if (err) {
         return next(err)
       }
@@ -146,8 +146,8 @@ const AuthenticationController = {
     )
   },
 
-  doPassportLogin(req, username, password, done) {
-    const email = username.toLowerCase()
+  doPassportLogin(req, ldapUser, done) {
+    const email = ldapUser.mail
     const Modules = require('../../infrastructure/Modules')
     Modules.hooks.fire(
       'preDoPassportLogin',
@@ -175,7 +175,7 @@ const AuthenticationController = {
           }
           AuthenticationManager.authenticate(
             { email },
-            password,
+            null,
             function (error, user) {
               if (error != null) {
                 return done(error)

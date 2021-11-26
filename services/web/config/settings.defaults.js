@@ -150,6 +150,14 @@ module.exports = {
     },
   },
 
+  ldap: {
+    url: process.env.LDAP_URL || 'ldap://ldap.example.org:389',
+    bindDN: process.env.LDAP_BIND_DN || 'cn=admin,dc=example,dc=org',
+    bindCredentials: process.env.LDAP_BIND_PW || 'admin',
+    searchBase: process.env.LDAP_SEARCH_BASE || 'dc=example,dc=org',
+    searchFilter: process.env.LDAP_SEARCH_FILTER || '(cn={{username}})',
+  },
+
   // Service locations
   // -----------------
 

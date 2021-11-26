@@ -24,7 +24,7 @@ const cookieParser = require('cookie-parser')
 const bearerToken = require('express-bearer-token')
 
 const passport = require('passport')
-const LocalStrategy = require('passport-local').Strategy
+const LdapStrategy = require('passport-ldapauth')
 
 const oneDayInMilliseconds = 86400000
 const ReferalConnect = require('../Features/Referal/ReferalConnect')
@@ -174,13 +174,14 @@ webRouter.use(passport.initialize())
 webRouter.use(passport.session())
 
 passport.use(
-  new LocalStrategy(
+  new LdapStrategy(
     {
+      server: Settings.ldap,
       passReqToCallback: true,
-      usernameField: 'email',
+      usernameField: 'username',
       passwordField: 'password',
     },
-    AuthenticationController.doPassportLogin
+    AuthenticationController.doPassportLogin,
   )
 )
 passport.serializeUser(AuthenticationController.serializeUser)
