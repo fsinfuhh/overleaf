@@ -1,5 +1,8 @@
 FROM registry.mafiasi.de/sharelatex:main
 
+RUN tlmgr update --self --all
+RUN tlmgr install scheme-full
+
 COPY services/web/app/views/user/login.pug /var/www/sharelatex/web/app/views/user/login.pug
 COPY services/web/app/views/user/settings.pug /var/www/sharelatex/web/app/views/user/settings.pug
 #COPY services/web/config/settings.defaults.js /var/www/sharelatex/web/config/settings.defaults.js
