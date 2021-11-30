@@ -176,7 +176,7 @@ webRouter.use(passport.session())
 passport.use(
   new LdapStrategy(
     {
-      server: Settings.ldap,
+      server: Settings.ldap.server,
       passReqToCallback: true,
       usernameField: 'username',
       passwordField: 'password',

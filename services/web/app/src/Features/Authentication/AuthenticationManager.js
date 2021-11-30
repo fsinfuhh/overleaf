@@ -23,25 +23,28 @@ const _checkWriteResult = function (result, callback) {
 }
 
 const AuthenticationManager = {
-  authenticate(query, password, callback) {
+  authenticate(ldapUser, password, callback) {
     // Using Mongoose for legacy reasons here. The returned User instance
     // gets serialized into the session and there may be subtle differences
     // between the user returned by Mongoose vs mongodb (such as default values)
-    User.findOne(query, (error, user) => {
+    const email = ldapUser[Settings.ldap.emailAtt];
+    User.findOne({ email }, (error, user) => {
       if (error) {
         return callback(error)
       }
-      AuthenticationManager.createIfNotExistsAndLogin(query, user, callback)
+      AuthenticationManager.createIfNotExistsAndLogin(ldapUser, user, callback)
     })
   },
 
-  createIfNotExistsAndLogin(query, user, callback) {
+  createIfNotExistsAndLogin(ldapUser, user, callback) {
     if (!user) {
       // create random password for local user database, does not get checked during login
       const pass = crypto.randomBytes(32).toString("hex")
       require('../User/UserRegistrationHandler').registerNewUser(
         {
-          email: query.email,
+          first_name: ldapUser[Settings.ldap.nameAtt],
+          last_name: ldapUser[Settings.ldap.lastNameAtt],
+          email: ldapUser[Settings.ldap.emailAtt],
           password: pass
         },
         function(error, user) {

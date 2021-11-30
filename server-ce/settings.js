@@ -449,6 +449,7 @@ if (process.env.SHARELATEX_LDAP_URL) {
     _ldap_timeout
   settings.externalAuth = true
   settings.ldap = {
+    enable: true,
     emailAtt: process.env.SHARELATEX_LDAP_EMAIL_ATT,
     nameAtt: process.env.SHARELATEX_LDAP_NAME_ATT,
     lastNameAtt: process.env.SHARELATEX_LDAP_LAST_NAME_ATT,

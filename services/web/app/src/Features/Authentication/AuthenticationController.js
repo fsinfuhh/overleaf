@@ -147,7 +147,7 @@ const AuthenticationController = {
   },
 
   doPassportLogin(req, ldapUser, done) {
-    const email = ldapUser.mail
+    const email = ldapUser[Settings.ldap.emailAtt]
     const Modules = require('../../infrastructure/Modules')
     Modules.hooks.fire(
       'preDoPassportLogin',
@@ -174,7 +174,7 @@ const AuthenticationController = {
             })
           }
           AuthenticationManager.authenticate(
-            { email },
+            ldapUser,
             null,
             function (error, user) {
               if (error != null) {
