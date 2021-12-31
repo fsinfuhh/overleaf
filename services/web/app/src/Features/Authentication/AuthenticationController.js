@@ -83,13 +83,8 @@ const AuthenticationController = {
         // `user` is either a user object or false
         return AuthenticationController.finishLogin(user, req, res, next)
       } else {
-        if (info.redir != null) {
-          return res.json({ redir: info.redir })
-        } else {
-          res.status(info.status || 200)
-          delete info.status
-          return res.json({ message: info })
-        }
+        res.status(401)
+        return res.json(info)
       }
     })(req, res, next)
   },
